@@ -1,0 +1,33 @@
+body {
+    font-family: sans-serif;
+    background: #6291d9; 
+display: flex;
+  justify-content: center;
+  align-items: self-start;
+  height: 300px;  
+}
+
+.login-box {
+    width: 300px;
+    margin: 100px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+}
+
+input {
+    width: 300px;
+    padding: 8px;
+    margin-top: 5px;
+    border-radius: 7px;
+}
+
+button {
+    width: 230px;
+    padding: 10px;
+    margin-left: 40px;
+    background: #65c66d;
+    color: white;
+    border: none;
+    border-radius: 6px;
+}
