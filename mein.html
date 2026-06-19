@@ -89,6 +89,54 @@
         .search-box button:hover {
             background: var(--primary-dark);
         }
+        .guide-panel {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 24px;
+            padding: 22px 24px;
+            margin-bottom: 28px;
+        }
+        .guide-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .guide-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+        .guide-close {
+            padding: 10px 14px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 14px;
+            background: white;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .guide-close:hover {
+            background: #e0f2fe;
+        }
+        .guide-toggle {
+            position: absolute;
+            top: 18px;
+            right: 24px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+        }
+        .guide-toggle:hover {
+            background: #eff6ff;
+        }
         .skill-list {
             display: flex;
             gap: 10px;
@@ -259,9 +307,23 @@
     <header>
         <h1>スキルエクスチェンジ</h1>
         <p>あなたの持っているスキルで、教えたい人と学びたい人をつなぎます。アイコンをクリックしてチャットを始めましょう。</p>
+        <button id="showGuideButton" class="guide-toggle" type="button" aria-label="ガイドラインを表示">?</button>
     </header>
     <main class="layout">
         <section class="panel">
+            <div class="guide-panel" id="guidePanel">
+                <div class="guide-header">
+                    <h2>ご利用ガイドライン</h2>
+                    <button class="guide-close" id="closeGuideButton" type="button">閉じる</button>
+                </div>
+                <ul style="margin: 0; padding-left: 20px; color: var(--muted);">
+                    <li>自分の得意なスキルと学びたい内容を正しく入力してください。</li>
+                    <li>カードをクリックして相手を選び、最初に挨拶と学びたい内容を伝えましょう。</li>
+                    <li>質問は具体的に、回答は丁寧に行ってください。</li>
+                    <li>個人情報は公開せず、安全なやりとりを心がけてください。</li>
+                    <li>相手を尊重し、ルールを守ってスキル交換を楽しみましょう。</li>
+                </ul>
+            </div>
             <h2>あなたの持っているスキル</h2>
             <div class="skill-list" id="mySkillList"></div>
             <div style="margin-top: 28px;">
@@ -309,6 +371,7 @@
         const chatPanel = document.getElementById('chatPanel');
         const messageInput = document.getElementById('messageInput');
         const sendButton = document.getElementById('sendButton');
+        const closeGuideButton = document.getElementById('closeGuideButton');
 
         let activeUser = null;
         const chatHistory = {};
@@ -436,12 +499,22 @@
             }
         });
 
+        const showGuideButton = document.getElementById('showGuideButton');
+
         sendButton.addEventListener('click', sendMessage);
         messageInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' && !event.shiftKey) {
                 event.preventDefault();
                 sendMessage();
             }
+        });
+
+        closeGuideButton.addEventListener('click', () => {
+            document.getElementById('guidePanel').style.display = 'none';
+        });
+
+        showGuideButton.addEventListener('click', () => {
+            document.getElementById('guidePanel').style.display = 'block';
         });
 
         renderMySkills();
