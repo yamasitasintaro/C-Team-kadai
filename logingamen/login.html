@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>ログイン</h2>
+
+    <form action="/login" method="post">
+        <label for="username">ユーザー名</label><br>
+        <input type="text" id="username" name="username" required minlength="2" placeholder="例:山田太郎"><br><br>
+
+        <label for="password">パスワード</label><br>
+        <input type="password" id="password" name="password" required minlength="8" placeholder="8文字以上の半角英数字"><br><br>
+
+        <button type="submit">ログイン</button>
+    </form>
+</body>
+</html>
