@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スキルエクスチェンジ</title>
+    <style>
+        :root {
+            --bg: #f3f7fb;
+            --surface: #ffffff;
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --text: #111827;
+            --muted: #6b7280;
+            --border: #d1d5db;
+            --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(180deg, #eef4ff 0%, #f9fbff 100%);
+            color: var(--text);
+        }
+        header {
+            padding: 28px 24px 8px;
+            text-align: center;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        header p {
+            margin: 10px auto 0;
+            max-width: 720px;
+            color: var(--muted);
+        }
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            max-width: 1180px;
+            margin: 32px auto;
+            padding: 0 24px 48px;
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+        .panel h2 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 1.25rem;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .search-box input {
+            flex: 1;
+            min-width: 220px;
+            padding: 14px 16px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            font-size: 1rem;
+        }
+        .search-box button {
+            padding: 14px 20px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .search-box button:hover {
+            background: var(--primary-dark);
+        }
+        .skill-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+        .skill-chip {
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: #eef6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.18);
+        }
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            align-items: stretch;
+            grid-auto-rows: minmax(140px, auto);
+        }
+        .card {
+            display: grid;
+            grid-template-columns: 72px 1fr;
+            gap: 16px;
+            align-items: center;
+            justify-items: start;
+            min-height: 140px;
+            width: 100%;
+            padding: 18px;
+            border-radius: 22px;
+            background: #f8fbff;
+            border: 1px solid #dde9f6;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 28px rgba(15, 23, 42, 0.12);
+        }
+        .avatar {
+            width: 66px;
+            height: 66px;
+            min-width: 66px;
+            min-height: 66px;
+            margin: auto 0;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #6366f1);
+            display: grid;
+            place-items: center;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.2);
+        }
+        .card-body {
+            display: grid;
+            gap: 6px;
+            min-height: 70px;
+            padding: 4px 0;
+            justify-self: stretch;
+            text-align: left;
+        }
+        .card-body strong {
+            display: block;
+            font-size: 1rem;
+            height: 24px;
+            line-height: 24px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .card-body small {
+            color: var(--muted);
+            height: 20px;
+            line-height: 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .chat-panel {
+            display: none;
+            grid-template-rows: auto 1fr auto;
+            height: auto;
+            min-height: 280px;
+        }
+        .chat-panel.active {
+            display: grid;
+        }
+        .chat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .chat-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+        .chat-area {
+            padding: 18px 0;
+            overflow-y: auto;
+            display: grid;
+            gap: 14px;
+        }
+        .message {
+            max-width: 82%;
+            padding: 14px 16px;
+            border-radius: 18px;
+            line-height: 1.55;
+            font-size: 0.98rem;
+        }
+        .message.user {
+            justify-self: end;
+            background: #dbeafe;
+            color: #1e293b;
+            border-bottom-right-radius: 4px;
+        }
+        .message.partner {
+            justify-self: start;
+            background: #ffffff;
+            color: var(--text);
+            border-bottom-left-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+        .chat-input {
+            display: grid;
+            gap: 8px;
+            padding-top: 10px;
+        }
+        .chat-input textarea {
+            width: 100%;
+            min-height: 68px;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            resize: vertical;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+        .chat-input button {
+            justify-self: end;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 14px;
+            background: var(--primary);
+            color: white;
+            cursor: pointer;
+        }
+        .empty-state {
+            padding: 30px 20px;
+            border-radius: 20px;
+            border: 1px dashed #bfdbfe;
+            text-align: center;
+            color: var(--muted);
+            background: #f8fbff;
+        }
+        @media (max-width: 980px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>スキルエクスチェンジ</h1>
+        <p>あなたの持っているスキルで、教えたい人と学びたい人をつなぎます。アイコンをクリックしてチャットを始めましょう。</p>
+    </header>
+    <main class="layout">
+        <section class="panel">
+            <h2>あなたの持っているスキル</h2>
+            <div class="skill-list" id="mySkillList"></div>
+            <div style="margin-top: 28px;">
+                <h2>学びたいスキルを検索</h2>
+                <div class="search-box">
+                    <input id="skillSearch" type="text" placeholder="例: プログラミング、英語、デザイン" />
+                    <button id="searchButton" type="button">検索</button>
+                </div>
+                <p id="searchHint" style="margin-top: 12px; color: var(--muted);">検索すると、欲しいスキルを持つおすすめユーザーを絞り込みできます。</p>
+            </div>
+            <div style="margin-top: 28px;">
+                <h2>おすすめの交換相手</h2>
+                <div class="recommendations" id="recommendationList"></div>
+            </div>
+            <div class="chat-panel panel" id="chatPanel">
+                <div class="chat-header">
+                    <h3 id="chatTitle">チャット: 選択待ち</h3>
+                    <span id="chatStatus" style="color: var(--muted);">相手を選択してください</span>
+                </div>
+                <div class="chat-area" id="chatArea"></div>
+                <div class="chat-input">
+                    <textarea id="messageInput" placeholder="メッセージを入力..." disabled></textarea>
+                    <button id="sendButton" disabled>送信</button>
+                </div>
+            </div>
+        </section>
+    </main>
+    <script>
+        const mySkills = ['Web開発', 'データ分析', '英語会話'];
+        const users = [
+            { id: 1, name: 'あやか', skill: 'UI/UXデザイン', wants: '英語会話', avatar: 'A' },
+            { id: 2, name: 'たけし', skill: 'Python', wants: 'データ分析', avatar: 'T' },
+            { id: 3, name: 'まり', skill: '動画編集', wants: 'Web開発', avatar: 'M' },
+            { id: 4, name: 'しょう', skill: 'ビジネス英語', wants: 'UI/UXデザイン', avatar: 'S' },
+            { id: 5, name: 'みき', skill: 'プレゼンテーション', wants: 'Python', avatar: 'M' }
+        ];
+
+        const mySkillList = document.getElementById('mySkillList');
+        const recommendationList = document.getElementById('recommendationList');
+        const skillSearch = document.getElementById('skillSearch');
+        const searchButton = document.getElementById('searchButton');
+        const chatTitle = document.getElementById('chatTitle');
+        const chatStatus = document.getElementById('chatStatus');
+        const chatArea = document.getElementById('chatArea');
+        const chatPanel = document.getElementById('chatPanel');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+
+        let activeUser = null;
+        const chatHistory = {};
+
+        function renderMySkills() {
+            mySkillList.innerHTML = '';
+            mySkills.forEach(skill => {
+                const chip = document.createElement('div');
+                chip.className = 'skill-chip';
+                chip.textContent = skill;
+                mySkillList.appendChild(chip);
+            });
+        }
+
+        function renderRecommendations(filter = '') {
+            const normalizedFilter = filter.trim().toLowerCase();
+            const filteredUsers = users.filter(user => {
+                if (!normalizedFilter) return true;
+                return user.skill.toLowerCase().includes(normalizedFilter) || user.wants.toLowerCase().includes(normalizedFilter);
+            });
+            recommendationList.innerHTML = '';
+
+            if (!filteredUsers.length) {
+                const empty = document.createElement('div');
+                empty.className = 'empty-state';
+                empty.textContent = '条件に一致するユーザーが見つかりませんでした。検索ワードを変えてみてください。';
+                recommendationList.appendChild(empty);
+                return;
+            }
+
+            filteredUsers.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="avatar">${user.avatar}</div>
+                    <div class="card-body">
+                        <strong>${user.name}</strong>
+                        <small>教えられる: ${user.skill}</small>
+                        <small>学びたい: ${user.wants}</small>
+                    </div>
+                `;
+                recommendationList.appendChild(card);
+                
+                const nameEl = card.querySelector('.card-body strong');
+                nameEl.title = user.name;
+                
+                const skillEls = card.querySelectorAll('.card-body small');
+                skillEls[0].title = `教えられる: ${user.skill}`;
+                skillEls[1].title = `学びたい: ${user.wants}`;
+                
+                card.addEventListener('click', () => openChat(user));
+            });
+        }
+
+        function openChat(user) {
+            activeUser = user;
+            chatPanel.classList.add('active');
+            chatTitle.textContent = `チャット: ${user.name}`;
+            chatStatus.textContent = `${user.name}とスキル交換を始めましょう`;
+            messageInput.disabled = false;
+            sendButton.disabled = false;
+            messageInput.value = '';
+            renderChat();
+        }
+
+        function getHistory(userId) {
+            if (!chatHistory[userId]) {
+                chatHistory[userId] = [
+                    { speaker: 'partner', text: `こんにちは、${userId === 1 ? 'あやか' : userId === 2 ? 'たけし' : userId === 3 ? 'まり' : userId === 4 ? 'しょう' : 'みき'}です！${users.find(u => u.id === userId).skill}について教えます。` }
+                ];
+            }
+            return chatHistory[userId];
+        }
+
+        function renderChat() {
+            const history = activeUser ? getHistory(activeUser.id) : [];
+            chatArea.innerHTML = '';
+            if (!activeUser) {
+                chatArea.innerHTML = '<div class="empty-state">ユーザーのアイコンをクリックすると、ここにチャットが表示されます。</div>';
+                return;
+            }
+            history.forEach(message => {
+                const item = document.createElement('div');
+                item.className = `message ${message.speaker}`;
+                item.textContent = message.text;
+                chatArea.appendChild(item);
+            });
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !activeUser) return;
+            const history = getHistory(activeUser.id);
+            history.push({ speaker: 'user', text });
+            const autoReply = generateReply(text, activeUser);
+            if (autoReply) {
+                history.push({ speaker: 'partner', text: autoReply });
+            }
+            messageInput.value = '';
+            renderChat();
+        }
+
+        function generateReply(text, user) {
+            const lower = text.toLowerCase();
+            if (lower.includes('こんにちは') || lower.includes('はじめまして')) {
+                return 'よろしくお願いします！どんな点から始めたいですか？';
+            }
+            if (lower.includes('教えて') || lower.includes('どうすれば')) {
+                return `${user.skill}のポイントをわかりやすく説明しますね。まずは基本の考え方を整理しましょう。`;
+            }
+            if (lower.includes('ありがとう') || lower.includes('助か')) {
+                return 'そう言っていただけて嬉しいです！他にも知りたいことがあれば教えてください。';
+            }
+            return 'なるほど、詳しく教えていただけますか？こちらからも続けて質問します。';
+        }
+
+        searchButton.addEventListener('click', () => {
+            renderRecommendations(skillSearch.value);
+        });
+
+        skillSearch.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                renderRecommendations(skillSearch.value);
+            }
+        });
+
+        sendButton.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        renderMySkills();
+        renderRecommendations();
+    </script>
+</body>
+</html>
